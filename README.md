@@ -33,6 +33,7 @@ func (e *errorHandler) Error(err error) {
 server := &server.PacketServer{
     Store:        &store.Memory{}, // we are using the in-memory handler
     ErrorHandler: &errorHandler{},
+    MetadataDevice: "abcd156", // the device that metadata will answer for
 }
 
 srv := &http.Server{
