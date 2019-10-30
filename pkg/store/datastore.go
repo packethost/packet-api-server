@@ -8,7 +8,7 @@ import (
 // following a contract API
 type DataStore interface {
 	ListFacilities() ([]*packngo.Facility, error)
-	CreateDevice(projectID, name string) ([]*packngo.Device, error)
+	CreateDevice(projectID, name string) (*packngo.Device, error)
 	ListDevices(projectID string) ([]*packngo.Device, error)
 	GetDevice(deviceID string) (*packngo.Device, error)
 	DeleteDevice(deviceID string) (bool, error)
