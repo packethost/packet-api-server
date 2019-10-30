@@ -89,27 +89,8 @@ func (m *Memory) DeleteDevice(deviceID string) (bool, error) {
 
 // ListVolumes list the volumes for the project
 func (m *Memory) ListVolumes(projectID string, listOpt *packngo.ListOptions) ([]*packngo.Volume, error) {
-	total := len(m.volumes)
-	count := total
-	start := 0
-	if listOpt != nil && listOpt.PerPage > 0 {
-		count = listOpt.PerPage
-	}
-	if listOpt != nil {
-		start = listOpt.Page
-	}
-	// if we asked to start past the end, start at the last
-	if start >= total {
-		start = total - 1
-	}
-	if start < 0 {
-		start = 0
-	}
-	end := start + count
-	// if we asked to finish past the end, finish at the last
-	if end > len(m.volumes) {
-		end = len(m.volumes)
-	}
+	start, end := calculateStartEndSlice(len(m.volumes), listOpt)
+
 	vols := make([]*packngo.Volume, 0, end-start)
 	// we sort consistently by lexical order of volume ID. Just because.
 	var keys []string
@@ -224,4 +205,28 @@ func (m *Memory) DetachVolume(attachID string) (bool, error) {
 // GetAttachmentMetadata get the metadata about a given attachment
 func (m *Memory) GetAttachmentMetadata(attachID string) (string, []string, error) {
 	return iqn, []string{ip1, ip2}, nil
+}
+
+func calculateStartEndSlice(total int, listOpt *packngo.ListOptions) (int, int) {
+	count := total
+	start := 0
+	if listOpt != nil && listOpt.PerPage > 0 {
+		count = listOpt.PerPage
+	}
+	if listOpt != nil {
+		start = listOpt.Page
+	}
+	// if we asked to start past the end, start at the last
+	if start >= total {
+		start = total - 1
+	}
+	if start < 0 {
+		start = 0
+	}
+	end := start + count
+	// if we asked to finish past the end, finish at the last
+	if end > total {
+		end = total
+	}
+	return start, end
 }
