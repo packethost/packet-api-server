@@ -89,7 +89,8 @@ func (m *Memory) DeleteDevice(deviceID string) (bool, error) {
 
 // ListVolumes list the volumes for the project
 func (m *Memory) ListVolumes(projectID string, listOpt *packngo.ListOptions) ([]*packngo.Volume, error) {
-	count := len(m.volumes)
+	total := len(m.volumes)
+	count := total
 	start := 0
 	if listOpt != nil && listOpt.PerPage > 0 {
 		count = listOpt.PerPage
@@ -98,8 +99,11 @@ func (m *Memory) ListVolumes(projectID string, listOpt *packngo.ListOptions) ([]
 		start = listOpt.Page
 	}
 	// if we asked to start past the end, start at the last
-	if start >= len(m.volumes) {
-		start = len(m.volumes) - 1
+	if start >= total {
+		start = total - 1
+	}
+	if start < 0 {
+		start = 0
 	}
 	end := start + count
 	// if we asked to finish past the end, finish at the last
