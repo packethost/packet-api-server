@@ -1,6 +1,8 @@
 package store
 
 import (
+	"sort"
+
 	"github.com/google/uuid"
 	"github.com/packethost/packet-api-server/pkg/util"
 	"github.com/packethost/packngo"
@@ -88,12 +90,31 @@ func (m *Memory) DeleteDevice(deviceID string) (bool, error) {
 // ListVolumes list the volumes for the project
 func (m *Memory) ListVolumes(projectID string, listOpt *packngo.ListOptions) ([]*packngo.Volume, error) {
 	count := len(m.volumes)
-	vols := make([]*packngo.Volume, 0, count)
-	for _, v := range m.volumes {
-		if len(vols) >= count {
-			break
-		}
-		vols = append(vols, v)
+	start := 0
+	if listOpt != nil && listOpt.PerPage > 0 {
+		count = listOpt.PerPage
+	}
+	if listOpt != nil {
+		start = listOpt.Page
+	}
+	// if we asked to start past the end, start at the last
+	if start >= len(m.volumes) {
+		start = len(m.volumes) - 1
+	}
+	end := start + count
+	// if we asked to finish past the end, finish at the last
+	if end > len(m.volumes) {
+		end = len(m.volumes)
+	}
+	vols := make([]*packngo.Volume, 0, end-start)
+	// we sort consistently by lexical order of volume ID. Just because.
+	var keys []string
+	for k := range m.volumes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys[start:end] {
+		vols = append(vols, m.volumes[k])
 	}
 	return vols, nil
 }
