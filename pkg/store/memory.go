@@ -21,6 +21,16 @@ type Memory struct {
 	devices     map[string]*packngo.Device
 }
 
+// NewMemory returns a properly initialized Memory
+func NewMemory() *Memory {
+	return &Memory{
+		volumes:     map[string]*packngo.Volume{},
+		attachments: map[string]*packngo.VolumeAttachment{},
+		facilities:  []*packngo.Facility{},
+		devices:     map[string]*packngo.Device{},
+	}
+}
+
 // ListFacilities returns facilities; if blank, it knows about ewr1
 func (m *Memory) ListFacilities() ([]*packngo.Facility, error) {
 	if len(m.facilities) != 0 {
