@@ -48,6 +48,8 @@ func (p *PacketServer) CreateHandler() http.Handler {
 	r.HandleFunc("/storage/attachments/{attachmentID}", p.volumeDetachHandler).Methods("DELETE")
 	// get all devices for a project
 	r.HandleFunc("/projects/{projectID}/devices", p.listDevicesHandler).Methods("GET")
+	// get a single device
+	r.HandleFunc("/devices/{deviceID}", p.getDeviceHandler).Methods("GET")
 	// handle metadata requests
 	r.HandleFunc("/metadata", p.metadataHandler).Methods("GET")
 	return r
@@ -88,6 +90,24 @@ func (p *PacketServer) listDevicesHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		p.ErrorHandler.Error(err)
 	}
+}
+
+// get information about a specific device
+func (p *PacketServer) getDeviceHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	volID := vars["deviceID"]
+	dev, err := p.Store.GetDevice(volID)
+	if err != nil {
+		p.ErrorHandler.Error(err)
+	}
+	if dev != nil {
+		err := json.NewEncoder(w).Encode(&dev)
+		if err != nil {
+			p.ErrorHandler.Error(err)
+		}
+		return
+	}
+	http.NotFound(w, r)
 }
 
 // list all volumes for a project
