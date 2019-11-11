@@ -22,7 +22,7 @@ type Memory struct {
 	attachments map[string]*packngo.VolumeAttachment
 	facilities  map[string]*packngo.Facility
 	devices     map[string]*packngo.Device
-	plans     map[string]*packngo.Plan
+	plans       map[string]*packngo.Plan
 }
 
 // NewMemory returns a properly initialized Memory
