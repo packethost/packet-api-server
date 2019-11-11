@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/google/uuid"
@@ -19,7 +20,7 @@ const (
 type Memory struct {
 	volumes     map[string]*packngo.Volume
 	attachments map[string]*packngo.VolumeAttachment
-	facilities  []*packngo.Facility
+	facilities  map[string]*packngo.Facility
 	devices     map[string]*packngo.Device
 }
 
@@ -28,15 +29,34 @@ func NewMemory() *Memory {
 	return &Memory{
 		volumes:     map[string]*packngo.Volume{},
 		attachments: map[string]*packngo.VolumeAttachment{},
-		facilities:  []*packngo.Facility{},
+		facilities:  map[string]*packngo.Facility{},
 		devices:     map[string]*packngo.Device{},
 	}
 }
 
+// CreateFacility creates a new facility
+func (m *Memory) CreateFacility(name, code string) (*packngo.Facility, error) {
+	facility := &packngo.Facility{
+		ID:   uuid.New().String(),
+		Name: name,
+		Code: code,
+	}
+	m.facilities[facility.ID] = facility
+	return facility, nil
+}
+
 // ListFacilities returns facilities; if blank, it knows about ewr1
 func (m *Memory) ListFacilities() ([]*packngo.Facility, error) {
-	if len(m.facilities) != 0 {
-		return m.facilities, nil
+	count := len(m.facilities)
+	if count != 0 {
+		facilities := make([]*packngo.Facility, 0, count)
+		for _, v := range m.facilities {
+			if len(facilities) >= count {
+				break
+			}
+			facilities = append(facilities, v)
+		}
+		return facilities, nil
 	}
 	return []*packngo.Facility{
 		{ID: "e1e9c52e-a0bc-4117-b996-0fc94843ea09", Name: "Parsippany, NJ", Code: "ewr1"},
@@ -45,12 +65,16 @@ func (m *Memory) ListFacilities() ([]*packngo.Facility, error) {
 }
 
 // CreateDevice creates a new device
-func (m *Memory) CreateDevice(projectID, name string) (*packngo.Device, error) {
+func (m *Memory) CreateDevice(projectID, name string, facility *packngo.Facility) (*packngo.Device, error) {
+	if facility == nil {
+		return nil, fmt.Errorf("must include a valid facility")
+	}
 	device := &packngo.Device{
 		DeviceRaw: packngo.DeviceRaw{
 			ID:       uuid.New().String(),
 			Hostname: name,
 			State:    "active",
+			Facility: facility,
 		},
 	}
 	m.devices[device.ID] = device
