@@ -29,7 +29,7 @@ ifndef PKG_LIST
 	$(eval PKG_LIST := $(shell $(BUILD_CMD) go list ./... | grep -v vendor))
 endif
 
-.PHONY: fmt-check lint test vet golint tag version
+.PHONY: fmt fmt-check lint test vet golint tag version
 
 ## report the git tag that would be used for the images
 tag:
@@ -46,6 +46,10 @@ fmt-check:
 	  $(BUILD_CMD) gofmt -s -e -d ${GO_FILES}; \
 	  exit 1; \
 	fi
+
+## fmt files
+fmt:
+	$(BUILD_CMD) gofmt -w -s $(GO_FILES)
 
 golangci-lint: $(LINTER)
 $(LINTER):
