@@ -22,6 +22,7 @@ type Memory struct {
 	attachments map[string]*packngo.VolumeAttachment
 	facilities  map[string]*packngo.Facility
 	devices     map[string]*packngo.Device
+	plans     map[string]*packngo.Plan
 }
 
 // NewMemory returns a properly initialized Memory
@@ -82,10 +83,42 @@ func (m *Memory) GetFacilityByCode(code string) (*packngo.Facility, error) {
 	return nil, nil
 }
 
+// CreatePlan create a single plan
+func (m *Memory) CreatePlan(slug, name string) (*packngo.Plan, error) {
+	plan := &packngo.Plan{
+		ID:   uuid.New().String(),
+		Name: name,
+		Slug: slug,
+	}
+	m.plans[plan.ID] = plan
+	return plan, nil
+}
+
+// GetPlan get plan by ID
+func (m *Memory) GetPlan(id string) (*packngo.Plan, error) {
+	if plan, ok := m.plans[id]; ok {
+		return plan, nil
+	}
+	return nil, nil
+}
+
+// GetPlanBySlug get plan by slug
+func (m *Memory) GetPlanBySlug(slug string) (*packngo.Plan, error) {
+	for _, p := range m.plans {
+		if p.Slug == slug {
+			return p, nil
+		}
+	}
+	return nil, nil
+}
+
 // CreateDevice creates a new device
-func (m *Memory) CreateDevice(projectID, name string, facility *packngo.Facility) (*packngo.Device, error) {
+func (m *Memory) CreateDevice(projectID, name string, plan *packngo.Plan, facility *packngo.Facility) (*packngo.Device, error) {
 	if facility == nil {
 		return nil, fmt.Errorf("must include a valid facility")
+	}
+	if plan == nil {
+		return nil, fmt.Errorf("must include a valid plan")
 	}
 	device := &packngo.Device{
 		DeviceRaw: packngo.DeviceRaw{
