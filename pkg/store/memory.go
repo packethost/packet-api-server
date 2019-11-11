@@ -127,6 +127,7 @@ func (m *Memory) CreateDevice(projectID, name string, plan *packngo.Plan, facili
 			Hostname: name,
 			State:    "active",
 			Facility: facility,
+			Plan:     plan,
 		},
 	}
 	m.devices[device.ID] = device
