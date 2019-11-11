@@ -64,6 +64,24 @@ func (m *Memory) ListFacilities() ([]*packngo.Facility, error) {
 
 }
 
+// GetFacility get a single facility by ID
+func (m *Memory) GetFacility(id string) (*packngo.Facility, error) {
+	if facility, ok := m.facilities[id]; ok {
+		return facility, nil
+	}
+	return nil, nil
+}
+
+// GetFacilityByCode get a single facility by code
+func (m *Memory) GetFacilityByCode(code string) (*packngo.Facility, error) {
+	for _, f := range m.facilities {
+		if f.Code == code {
+			return f, nil
+		}
+	}
+	return nil, nil
+}
+
 // CreateDevice creates a new device
 func (m *Memory) CreateDevice(projectID, name string, facility *packngo.Facility) (*packngo.Device, error) {
 	if facility == nil {

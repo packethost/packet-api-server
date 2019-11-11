@@ -9,6 +9,8 @@ import (
 type DataStore interface {
 	CreateFacility(name, code string) (*packngo.Facility, error)
 	ListFacilities() ([]*packngo.Facility, error)
+	GetFacility(id string) (*packngo.Facility, error)
+	GetFacilityByCode(code string) (*packngo.Facility, error)
 	CreateDevice(projectID, name string, facility *packngo.Facility) (*packngo.Device, error)
 	ListDevices(projectID string) ([]*packngo.Device, error)
 	GetDevice(deviceID string) (*packngo.Device, error)
