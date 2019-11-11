@@ -134,6 +134,18 @@ func (m *Memory) CreateDevice(projectID, name string, plan *packngo.Plan, facili
 	return device, nil
 }
 
+// UpdateDevice updates an existing device
+func (m *Memory) UpdateDevice(id string, device *packngo.Device) error {
+	if device == nil {
+		return fmt.Errorf("must include a valid device")
+	}
+	if _, ok := m.devices[device.ID]; ok {
+		m.devices[device.ID] = device
+		return nil
+	}
+	return fmt.Errorf("device not found")
+}
+
 // ListDevices list all known devices for the project
 func (m *Memory) ListDevices(projectID string) ([]*packngo.Device, error) {
 	count := len(m.devices)
