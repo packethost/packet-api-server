@@ -32,6 +32,7 @@ func NewMemory() *Memory {
 		attachments: map[string]*packngo.VolumeAttachment{},
 		facilities:  map[string]*packngo.Facility{},
 		devices:     map[string]*packngo.Device{},
+		plans:       map[string]*packngo.Plan{},
 	}
 }
 
