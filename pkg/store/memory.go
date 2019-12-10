@@ -248,6 +248,7 @@ func (m *Memory) AttachVolume(volID string, deviceID string) (*packngo.VolumeAtt
 	}
 	vol.Attachments = append(vol.Attachments, &attachment)
 	dev.Volumes = append(dev.Volumes, vol)
+	m.attachments[uuid] = &attachment
 	return &attachment, nil
 }
 
