@@ -122,13 +122,11 @@ func (m *Memory) CreateDevice(projectID, name string, plan *packngo.Plan, facili
 		return nil, fmt.Errorf("must include a valid plan")
 	}
 	device := &packngo.Device{
-		DeviceRaw: packngo.DeviceRaw{
-			ID:       uuid.New().String(),
-			Hostname: name,
-			State:    "active",
-			Facility: facility,
-			Plan:     plan,
-		},
+		ID:       uuid.New().String(),
+		Hostname: name,
+		State:    "active",
+		Facility: facility,
+		Plan:     plan,
 	}
 	m.devices[device.ID] = device
 	return device, nil
@@ -243,7 +241,7 @@ func (m *Memory) AttachVolume(volID string, deviceID string) (*packngo.VolumeAtt
 	uuid := uuid.New().String()
 	attachment := packngo.VolumeAttachment{
 		ID:     uuid,
-		Device: packngo.Device{DeviceRaw: packngo.DeviceRaw{ID: deviceID}},
+		Device: packngo.Device{ID: deviceID},
 		Volume: *vol,
 	}
 	vol.Attachments = append(vol.Attachments, &attachment)
