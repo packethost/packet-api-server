@@ -25,4 +25,5 @@ type DataStore interface {
 	AttachVolume(volID string, deviceID string) (*packngo.VolumeAttachment, error)
 	DetachVolume(attachID string) (bool, error)
 	GetAttachmentMetadata(attachID string) (string, []string, error)
+	EnableBGP(projectID string, cbgpcr packngo.CreateBGPConfigRequest) error
 }

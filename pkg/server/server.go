@@ -38,6 +38,8 @@ func (p *PacketServer) CreateHandler() http.Handler {
 	r.HandleFunc("/projects/{projectID}/storage", p.listVolumesHandler).Methods("GET")
 	// get information about a specific volume
 	r.HandleFunc("/storage/{volumeID}", p.getVolumeHandler).Methods("GET")
+	// create a BGP config for a project
+	r.HandleFunc("/projects/{projectID}/bgp-configs", p.createBGPHandler).Methods("POST")
 	// create a volume for a project
 	r.HandleFunc("/projects/{projectID}/storage", p.createVolumeHandler).Methods("POST")
 	// delete a volume
@@ -293,6 +295,24 @@ func (p *PacketServer) metadataHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		p.ErrorHandler.Error(err)
 	}
+}
+
+// createBGPHandler enable BGP for a project
+func (p *PacketServer) createBGPHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	projectID := vars["projectID"]
+	// get the info from the body
+	decoder := json.NewDecoder(r.Body)
+	var cbgpcr packngo.CreateBGPConfigRequest
+	err := decoder.Decode(&cbgpcr)
+	if err != nil {
+		p.ErrorHandler.Error(err)
+	}
+
+	if err := p.Store.EnableBGP(projectID, cbgpcr); err != nil {
+		p.ErrorHandler.Error(err)
+	}
+	w.WriteHeader(http.StatusCreated)
 }
 
 func paramsToListOpts(params url.Values) (*packngo.ListOptions, error) {
