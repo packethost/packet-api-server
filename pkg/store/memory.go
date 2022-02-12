@@ -23,6 +23,7 @@ type Memory struct {
 	facilities  map[string]*packngo.Facility
 	devices     map[string]*packngo.Device
 	plans       map[string]*packngo.Plan
+	bgp         map[string]*packngo.BGPConfig
 }
 
 // NewMemory returns a properly initialized Memory
@@ -33,6 +34,7 @@ func NewMemory() *Memory {
 		facilities:  map[string]*packngo.Facility{},
 		devices:     map[string]*packngo.Device{},
 		plans:       map[string]*packngo.Plan{},
+		bgp:         map[string]*packngo.BGPConfig{},
 	}
 }
 
@@ -293,6 +295,15 @@ func (m *Memory) DetachVolume(attachID string) (bool, error) {
 // GetAttachmentMetadata get the metadata about a given attachment
 func (m *Memory) GetAttachmentMetadata(attachID string) (string, []string, error) {
 	return iqn, []string{ip1, ip2}, nil
+}
+
+func (m *Memory) EnableBGP(projectID string, cbgpcr packngo.CreateBGPConfigRequest) error {
+	m.bgp[projectID] = &packngo.BGPConfig{
+		ID:             uuid.New().String(),
+		DeploymentType: cbgpcr.DeploymentType,
+		Asn:            cbgpcr.Asn,
+	}
+	return nil
 }
 
 func calculateStartEndSlice(total int, listOpt *packngo.ListOptions) (int, int) {
