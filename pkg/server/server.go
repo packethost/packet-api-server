@@ -64,9 +64,9 @@ func (p *PacketServer) allFacilitiesHandler(w http.ResponseWriter, r *http.Reque
 		p.ErrorHandler.Error(err)
 	}
 	var resp = struct {
-		facilities []*packngo.Facility
+		Facilities []*packngo.Facility `json:"facilities"`
 	}{
-		facilities: facilities,
+		Facilities: facilities,
 	}
 	err = json.NewEncoder(w).Encode(&resp)
 	if err != nil {
