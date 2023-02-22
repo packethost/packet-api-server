@@ -22,6 +22,8 @@ BUILD_CMD = docker run --rm \
 endif
 
 GOBIN ?= $(shell go env GOPATH)/bin
+# Bump as necessary/desired to latest that supports our version of go at https://github.com/golangci/golangci-lint/releases
+GOLANGCI_LINT_VER := v1.51.2
 LINTER ?= $(GOBIN)/golangci-lint
 
 pkgs:
@@ -29,7 +31,7 @@ ifndef PKG_LIST
 	$(eval PKG_LIST := $(shell $(BUILD_CMD) go list ./... | grep -v vendor))
 endif
 
-.PHONY: fmt fmt-check lint test vet golint tag version
+.PHONY: fmt fmt-check lint test vet golint tag version golangci-lint
 
 ## report the git tag that would be used for the images
 tag:
@@ -38,7 +40,6 @@ tag:
 ## report the version that would be put in the binary
 version:
 	@echo $(VERSION)
-
 
 ## Check the file format
 fmt-check: 
@@ -51,18 +52,12 @@ fmt-check:
 fmt:
 	$(BUILD_CMD) gofmt -w -s $(GO_FILES)
 
-golangci-lint: $(LINTER)
-$(LINTER):
-	go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.17.1
-
-golint:
-ifeq (, $(shell which golint))
-	go get -u golang.org/x/lint/golint
-endif
+golangci-lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VER)
 
 ## Lint the files
-lint: pkgs golint golangci-lint
-	@$(BUILD_CMD) $(LINTER) run --disable-all --enable=golint ./ ./pkg
+lint: pkgs golangci-lint
+	@$(BUILD_CMD) $(LINTER) run ./...
 
 ## Run unittests
 test: pkgs
