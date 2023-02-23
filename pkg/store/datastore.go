@@ -18,12 +18,5 @@ type DataStore interface {
 	ListDevices(projectID string) ([]*packngo.Device, error)
 	GetDevice(deviceID string) (*packngo.Device, error)
 	DeleteDevice(deviceID string) (bool, error)
-	ListVolumes(projectID string, listOpt *packngo.ListOptions) ([]*packngo.Volume, error)
-	GetVolume(volID string) (*packngo.Volume, error)
-	DeleteVolume(volID string) (bool, error)
-	CreateVolume(cvr packngo.VolumeCreateRequest) (*packngo.Volume, error)
-	AttachVolume(volID string, deviceID string) (*packngo.VolumeAttachment, error)
-	DetachVolume(attachID string) (bool, error)
-	GetAttachmentMetadata(attachID string) (string, []string, error)
 	EnableBGP(projectID string, cbgpcr packngo.CreateBGPConfigRequest) error
 }
